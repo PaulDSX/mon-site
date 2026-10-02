@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Micro-contrôleur PIC — Paul Dessaux</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg: #fafafa;
+  --text: #1a1a1a;
+  --text-secondary: #555;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border: #e5e5e5;
+  --card-bg: #ffffff;
+  --card-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,.08);
+  --tag-bg: #f0f0f0;
+  --tag-text: #444;
+  --radius: 10px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.65;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+/* ── Header ── */
+header {
+  margin-bottom: 40px;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+header .subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin: 0 0 16px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 16px 0 0;
+}
+
+/* ── Nav ── */
+nav {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.15s;
+  position: relative;
+}
+
+nav a:hover {
+  color: var(--accent);
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+/* ── Sections ── */
+section {
+  margin-top: 48px;
+}
+
+h2 {
+  font-size: 1.35rem;
+  font-weight: 650;
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
+}
+
+h2 .section-icon {
+  margin-right: 8px;
+}
+
+/* ── Intro / Bio ── */
+.intro p {
+  margin: 0 0 16px;
+  color: var(--text);
+  font-size: 1.02rem;
+}
+
+.intro .bio-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.intro .bio-links a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
+}
+
+.intro .bio-links a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* ── Cards grid ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-decoration: none;
+  color: var(--text);
+  transition: box-shadow 0.2s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+  flex: 1;
+}
+
+.card .tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card .tag {
+  font-size: 0.72rem;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* ── Simple list (posts) ── */
+.post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.post-list li {
+  border-bottom: 1px solid var(--border);
+}
+
+.post-list li:last-child {
+  border-bottom: none;
+}
+
+.post-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.post-list a:hover {
+  color: var(--accent);
+}
+
+.post-list .post-title {
+  font-weight: 500;
+  font-size: 0.98rem;
+}
+
+.post-list .post-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.post-list .arrow {
+  color: var(--text-secondary);
+  transition: transform 0.15s, color 0.15s;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.post-list a:hover .arrow {
+  transform: translateX(3px);
+  color: var(--accent);
+}
+
+/* ── Fun project banner ── */
+.fun-banner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: var(--radius);
+  padding: 24px;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.15s, box-shadow 0.2s;
+  margin-top: 16px;
+}
+
+.fun-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+}
+
+.fun-banner .banner-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.fun-banner h3 {
+  font-size: 1.1rem;
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.fun-banner p {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ── Links ── */
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.15s;
+}
+
+a:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* ── Footer ── */
+footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .page {
+    padding: 32px 16px 60px;
+  }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.2rem; }
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+  nav { gap: 16px; }
+}
+
+/* ── Sub-page styles ── */
+.subpage .back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+
+.subpage .back:hover {
+  color: var(--accent);
+}
+
+.subpage h1 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.subpage .meta {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-bottom: 32px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.subpage .meta .tag {
+  font-size: 0.75rem;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.subpage .content {
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.subpage .content h2 {
+  font-size: 1.25rem;
+  margin-top: 40px;
+  margin-bottom: 12px;
+}
+
+.subpage .content h3 {
+  font-size: 1.1rem;
+  margin-top: 28px;
+  margin-bottom: 8px;
+}
+
+.subpage .content p {
+  margin: 0 0 16px;
+}
+
+.subpage .content ul {
+  margin: 0 0 16px 20px;
+  padding: 0;
+}
+
+.subpage .content li {
+  margin-bottom: 6px;
+}
+
+.subpage .content code {
+  background: var(--tag-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+.subpage .content pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.subpage .content pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.subpage .content .info-box {
+  background: #eff6ff;
+  border-left: 3px solid var(--accent);
+  padding: 14px 18px;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 0 0 20px;
+  font-size: 0.92rem;
+  color: #1e40af;
+}
+
+.subpage .content .placeholder-img {
+  background: var(--tag-bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin: 0 0 20px;
+}
+</style>
+</head>
+<body>
+  <div class="page subpage">
+    <a href="index.html" class="back">← Retour</a>
+    <h1>Micro-contrôleurs PIC</h1>
+    <div class="meta">
+      <span class="tag">PIC16F84a</span>
+      <span class="tag">PIC16F877a</span>
+      <span class="tag">Assembleur</span>
+      <span class="tag">C</span>
+      <span class="tag">MPLAB X</span>
+    </div>
+
+    <div class="content">
+      <p>
+        Ce module (EEL6-NUMU2) se décomposait en deux parties : des TPs d'initiation sur PIC16F84a pour comprendre l'architecture et le jeu d'instructions, puis un projet de synthèse sur PIC16F877a — la réalisation d'une horloge à quartz avec affichage LCD.
+      </p>
+
+      <h2>TPs sur PIC16F84a</h2>
+      <p>
+        Le PIC16F84a est un microcontrôleur 8-bit d'entrée de gamme chez Microchip, idéal pour l'apprentissage : 2 ports (A et B), un timer, et un jeu d'instructions RISC de 35 instructions. La carte d'application reliait le PIC à un afficheur 7 segments, 5 LEDs, et un bouton poussoir sur RB0 (capable de déclencher une interruption matérielle). La programmation et le debug se faisaient via l'interface ICD 3 sous MPLAB X.
+      </p>
+
+      <h3>TP1 — Prise en main et assembleur</h3>
+      <p>
+        Découverte de la chaîne de développement MPLAB X (éditeur, assembleur mpasm, programmateur, simulateur/débugueur ICD). Premier programme : allumer une LED. Puis écriture d'un chenillard sur les 5 LEDs avec temporisation par boucle de comptage — l'occasion de comprendre comment chaque instruction consomme exactement un cycle d'horloge (sauf les sauts).
+      </p>
+
+      <h3>TP2 — Du C et des timers</h3>
+      <p>
+        Réécriture du chenillard en C (compilateur XC8), puis utilisation du TIMER0 pour gérer la temporisation proprement au lieu des boucles de comptage. Configuration du prédiviseur, calcul de la valeur de rechargement pour obtenir le délai voulu — le genre de calcul qu'on finit par faire dans sa tête à force de le répéter.
+      </p>
+
+      <h3>TP3 — Interruptions et watchdog</h3>
+      <p>
+        Passage du polling aux interruptions : le TIMER0 déclenche une IT à chaque débordement, et la routine d'interruption gère le séquencement du chenillard. Puis utilisation du chien de garde (WDT) comme source de temporisation alternative. Enfin, un programme d'affichage de message défilant sur le 7 segments.
+      </p>
+
+      <h2>Projet : horloge à quartz sur PICDEM2+</h2>
+      <p>
+        Le projet de synthèse consistait à réaliser une horloge à quartz avec affichage sur un LCD 2×16 caractères, sur la carte PICDEM2+ équipée d'un PIC16F877a — le « grand frère » du 16F84a, avec 5 ports, 3 timers, un CAN, un module USART, et un module de debug intégré.
+      </p>
+
+      <h3>Base de temps</h3>
+      <p>
+        La carte intègre un quartz de 32,768 kHz relié au TIMER1. En le laissant tourner librement, le timer déborde toutes les 2 secondes exactement (2<sup>16</sup> / 32768). Pour obtenir une interruption chaque seconde, le module de comparaison CCP1 est configuré pour déclencher une IT à mi-parcours du timer. On ne réinitialise jamais le TIMER1 — toute réinitialisation introduirait un décalage et dégraderait la précision (~10<sup>-5</sup>) du quartz. Une LED sur RB1 clignote à 2 Hz en guise de heartbeat.
+      </p>
+
+      <h3>Librairie LCD</h3>
+      <p>
+        Le cœur du projet : développer from scratch une bibliothèque de fonctions pour piloter l'afficheur LCD (contrôleur Sunplus), en respectant le protocole de communication 4-bit. Le bus de données est partagé avec le port D du PIC, et les signaux de contrôle (RS, RW, E) demandent une attention particulière — un front parasite sur E suffit à décaler d'un demi-mot toutes les acquisitions suivantes, et une commutation involontaire de RD7 réinitialise l'afficheur.
+      </p>
+      <p>
+        La procédure d'initialisation suit un protocole précis : 4 cycles en mode 4-bit (seul le quartet de poids fort est significatif), avec des temporisations spécifiques à respecter. Les transferts de données se font ensuite en deux paquets de 4 bits (poids fort puis poids faible), en ramenant systématiquement E à l'état de repos entre chaque paquet.
+      </p>
+
+      <h3>Réglage de l'heure</h3>
+      <p>
+        Le réglage utilise les deux poussoirs S2 et S3 de la carte (S1 étant réservé au RESET). Un appui prolongé (>2 s) sur S2 fait entrer en mode réglage avec clignotement des heures ; S3 les incrémente (appui bref) ou les fait défiler (appui maintenu >2 s, à ~5 Hz). Un nouvel appui sur S2 passe aux minutes, un troisième quitte le mode réglage. L'anti-rebond se fait par échantillonnage à intervalle supérieur à 20 ms.
+      </p>
+      <p>
+        En option, le potentiomètre de la carte (relié à RA0 et au CAN 10-bit du PIC) permet un réglage « analogique » : en mode réglage, la rotation du potentiomètre fait varier la valeur entre 0 et 23 (heures) ou 0 et 59 (minutes). Pour s'affranchir du bruit, une variation de plus de 10 unités du CAN (~1/100<sup>e</sup> de tour) est requise pour valider un changement.
+      </p>
+
+      <h3>Approche modulaire</h3>
+      <p>
+        Le projet imposait une structuration rigoureuse du code en C : <code>main.c</code> pour la logique applicative, <code>timer.c</code> / <code>timer.h</code> pour la configuration de la base de temps, <code>lib_LCD.c</code> / <code>lib_LCD.h</code> pour la librairie d'affichage. Le formatage de l'heure utilise <code>sprintf</code> pour écrire dans un buffer avant envoi au LCD.
+      </p>
+
+    </div>
+
+    <footer>
+      <p>© 2026 Paul Dessaux</p>
+    </footer>
+  </div>
+</body>
+</html>
